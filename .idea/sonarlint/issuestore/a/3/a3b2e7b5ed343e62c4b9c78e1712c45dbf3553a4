@@ -1,0 +1,19 @@
+
+‡	java:S112¬"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚ÒιόÿÿÿÿJ$6b8b3e62-4b45-4255-8217-401f7e99bedd
+‡	java:S112Κ"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚ÒιόÿÿÿÿJ$1168349f-f24e-4c6e-964d-f16c3a1d5af2
+	java:S116="URename this field "SIGNER_KEY" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(λό§™J$0946abee-4fab-4a68-ba08-aa7956bd195e
+›	java:S116A"`Rename this field "VALID_ACCESS_DURATION" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ΑΝ…φJ$67c39d57-4555-4d09-928c-302f74bd396a
+	java:S116E"aRename this field "VALID_REFRESH_DURATION" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Δ‘ΩJ$c31c1c48-1337-4710-ae9e-441966ea68f8
+”	java:S116J"TRename this field "CLIENT_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(•Ό…ϊÿÿÿÿJ$5eae9dc9-fa8a-4c99-a9c7-6ceaab4af6d3
+	java:S116N"XRename this field "CLIENT_SECRET" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ΥÒ§ώÿÿÿÿJ$787b1e76-3772-497c-8f0e-60894fe449cf
+—	java:S116R"WRename this field "REDIRECT_URI" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¨τΨϋÿÿÿÿJ$2ad6a679-1bc4-448c-91b6-6630a197b5ba
+•	java:S116U"URename this field "GRANT_TYPE" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ο•ωÿÿÿÿJ$0a7523fd-99ae-405e-9b2b-a07e69133afd
+b
+java:S1170U"!Make this final field static too.(Ο•ωÿÿÿÿJ$0424a3bf-c1b5-436e-8c3f-c197ecc440a7
+z
+java:S1854€"=Remove this useless assignment to local variable "signedJWT".(•‘Ω¤J$0210c0d4-db51-4267-96dd-27b03de5ce71
+k
+java:S1481€".Remove this unused "signedJWT" local variable.(•‘Ω¤J$f16c3315-46d9-47b6-b770-9c77cce2ac5b
+i
+java:S1602δ",Remove useless curly braces around statement(µ±ζJ$dd699bdc-451b-465f-a3de-7d245b382880
+g	java:S106ι"+Replace this use of System.out by a logger.(δϋθΙJ$8cffb570-9ed7-40a7-b382-4dc61e9416e7
