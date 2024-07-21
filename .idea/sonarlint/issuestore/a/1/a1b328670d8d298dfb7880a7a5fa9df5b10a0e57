@@ -1,0 +1,7 @@
+
+H
+java:S1874o"2Remove this use of "fetchCount"; it is deprecated.(Ýฤ
+h
+java:S6204|"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ชจน
+i
+java:S6204…"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ชจน

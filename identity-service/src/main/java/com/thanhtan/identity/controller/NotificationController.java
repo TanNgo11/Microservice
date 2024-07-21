@@ -32,4 +32,5 @@ public class NotificationController {
         return ApiResponse.success(notificationService.markAsSeen(id));
     }
 
+
 }
