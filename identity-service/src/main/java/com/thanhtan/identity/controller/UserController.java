@@ -1,24 +1,17 @@
 package com.thanhtan.identity.controller;
 
-import com.thanhtan.identity.dto.request.CreateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateUserRequest;
-import com.thanhtan.identity.dto.request.UserRequest;
+import com.thanhtan.identity.dto.request.UserCreationRequest;
 import com.thanhtan.identity.dto.response.ApiResponse;
 import com.thanhtan.identity.dto.response.UserResponse;
 import com.thanhtan.identity.service.IUserService;
-import com.thanhtan.identity.util.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.thanhtan.identity.constant.PathConstant.API_V1_USERS;
@@ -34,7 +27,7 @@ public class UserController {
     IUserService userService;
 
     @PostMapping
-    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.success(userService.createUser(request));
 
     }
@@ -46,15 +39,15 @@ public class UserController {
     }
 
 
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('USER')||hasRole('ADMIN')")
-    public ApiResponse<UserResponse> updateUserProfile(
-            @RequestPart("user") String userStr,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-        UpdateUserRequest updateUserRequest = ValidationUtil.validateUserStr(userStr);
-
-        return ApiResponse.success(userService.updateUserProfile(updateUserRequest, file));
-    }
+//    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PreAuthorize("hasRole('USER')||hasRole('ADMIN')")
+//    public ApiResponse<UserResponse> updateUserProfile(
+//            @RequestPart("user") String userStr,
+//            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+//        UpdateUserRequest updateUserRequest = ValidationUtil.validateUserStr(userStr);
+//
+//        return ApiResponse.success(userService.updateUserProfile(updateUserRequest, file));
+//    }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')||hasRole('STAFF')")
@@ -86,37 +79,37 @@ public class UserController {
         return ApiResponse.success(userService.getSystemUsersById(userId));
     }
 
-    @PutMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<UserResponse> updateUserProfileById(
-            @PathVariable Long userId,
-            @RequestPart("user") String userStr,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+//    @PutMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ApiResponse<UserResponse> updateUserProfileById(
+//            @PathVariable Long userId,
+//            @RequestPart("user") String userStr,
+//            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+//
+//        UpdateUserRequest updateUserRequest = ValidationUtil.validateUserStr(userStr);
+//        return ApiResponse.success(userService.updateUserProfileById(updateUserRequest, file, userId));
+//    }
 
-        UpdateUserRequest updateUserRequest = ValidationUtil.validateUserStr(userStr);
-        return ApiResponse.success(userService.updateUserProfileById(updateUserRequest, file, userId));
-    }
+//    @PostMapping(value = "/admins", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ApiResponse<UserResponse> createSystemUserProfile(
+//            @RequestPart("user") String userStr,
+//            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+//
+//        CreateSystemUserRequest request = ValidationUtil.validateSystemUserStr(userStr);
+//        return ApiResponse.success(userService.createSystemUser(request, file));
+//    }
 
-    @PostMapping(value = "/admins", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<UserResponse> createSystemUserProfile(
-            @RequestPart("user") String userStr,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-
-        CreateSystemUserRequest request = ValidationUtil.validateSystemUserStr(userStr);
-        return ApiResponse.success(userService.createSystemUser(request, file));
-    }
-
-    @PutMapping(value = "/admins/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<UserResponse> updateSystemUserProfile(
-            @PathVariable Long userId,
-            @RequestPart("user") String userStr,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-
-        UpdateSystemUserRequest request = ValidationUtil.validateUpdateSystemUserStr(userStr);
-        return ApiResponse.success(userService.updateSystemUser(request, file, userId));
-    }
+//    @PutMapping(value = "/admins/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ApiResponse<UserResponse> updateSystemUserProfile(
+//            @PathVariable Long userId,
+//            @RequestPart("user") String userStr,
+//            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+//
+//        UpdateSystemUserRequest request = ValidationUtil.validateUpdateSystemUserStr(userStr);
+//        return ApiResponse.success(userService.updateSystemUser(request, file, userId));
+//    }
 
     @DeleteMapping("/customers")
     @PreAuthorize("hasRole('ADMIN')||hasRole('STAFF')")

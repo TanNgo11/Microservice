@@ -2,9 +2,9 @@ package com.thanhtan.identity.mapper;
 
 
 import com.thanhtan.identity.dto.request.CreateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateUserRequest;
-import com.thanhtan.identity.dto.request.UserRequest;
+import com.thanhtan.identity.dto.request.SystemUserUpdationRequest;
+import com.thanhtan.identity.dto.request.UserCreationRequest;
+import com.thanhtan.identity.dto.request.UserUpdationRequest;
 import com.thanhtan.identity.dto.response.UserResponse;
 import com.thanhtan.identity.entity.User;
 import org.mapstruct.Mapper;
@@ -17,7 +17,7 @@ import java.util.List;
 public interface UserMapper {
 
 
-    User toUser(UserRequest request);
+    User toUser(UserCreationRequest request);
 
     @Mapping(target = "roles", source = "roles", ignore = true)
     User toUser(CreateSystemUserRequest request);
@@ -30,15 +30,13 @@ public interface UserMapper {
     @Mapping(target = "username", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "orders", ignore = true)
-    void updateUser(@MappingTarget User user, UpdateUserRequest request);
+    void updateUser(@MappingTarget User user, UserUpdationRequest request);
 
 
     @Mapping(target = "username", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "orders", ignore = true)
-    void updateUser(@MappingTarget User user, UpdateSystemUserRequest request);
+    void updateUser(@MappingTarget User user, SystemUserUpdationRequest request);
 
 
     List<UserResponse> toUserResponseList(List<User> allUsers);

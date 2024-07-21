@@ -4,7 +4,6 @@ package com.thanhtan.identity.config;
 import com.thanhtan.identity.entity.User;
 import com.thanhtan.identity.enums.Role;
 import com.thanhtan.identity.repository.UserRepository;
-import com.thanhtan.identity.util.EmailSender;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,12 +23,11 @@ public class ApplicationInitConfig {
 
     PasswordEncoder passwordEncoder;
 
-    EmailSender emailSender;
 
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository){
+    ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
-            if (userRepository.findByUsername("admin").isEmpty()){
+            if (userRepository.findByUsername("admin").isEmpty()) {
                 var roles = new HashSet<String>();
                 roles.add(Role.ADMIN.name());
 

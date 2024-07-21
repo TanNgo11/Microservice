@@ -5,7 +5,10 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.thanhtan.identity.dto.request.*;
+import com.thanhtan.identity.dto.request.AuthenticationRequest;
+import com.thanhtan.identity.dto.request.IntrospectRequest;
+import com.thanhtan.identity.dto.request.LogoutRequest;
+import com.thanhtan.identity.dto.request.RefreshRequest;
 import com.thanhtan.identity.dto.response.AuthenticationResponse;
 import com.thanhtan.identity.dto.response.IntrospectResponse;
 import com.thanhtan.identity.entity.InvalidatedToken;
@@ -36,7 +39,9 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Date;
+import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -271,56 +276,56 @@ public class AuthenticationService implements IAuthenticationService {
                 .build();
     }
 
-    @Override
-    public AuthenticationResponse OutboundAuthenticate(String code) {
-        var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
-                .code(code)
-                .clientId(CLIENT_ID)
-                .clientSecret(CLIENT_SECRET)
-                .redirectUri(REDIRECT_URI)
-                .grantType(GRANT_TYPE)
-                .build());
-
-        log.info("TOKEN RESPONSE {}", response);
-
-        var userInfo = outboundUserClient.getUserInfor("json", response.getAccessToken());
-
-        log.info("USER INFO {}", userInfo);
-
-
-        Set<com.thanhtan.identity.entity.Role> roles = new HashSet<>();
-        com.thanhtan.identity.entity.Role userRole = roleRepository.findByName(com.thanhtan.identity.enums.Role.USER.name()).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
-        roles.add(userRole);
-
-        var user = userRepository.findByUsername(userInfo.getEmail())
-                .orElseGet(() -> {
-                    User newUser = User.builder()
-                            .username(userInfo.getEmail())
-                            .firstName(userInfo.getGivenName())
-                            .lastName(userInfo.getFamilyName())
-                            .password(UUID.randomUUID().toString())
-                            .roles(roles)
-                            .build();
-                    return userRepository.save(newUser);
-                });
-        var accessToken = generateToken(user, false);
-        var refreshToken = generateToken(user, true);
-
-
-        RefreshToken refreshTokenEntity = new RefreshToken();
-
-        refreshTokenEntity.setToken(refreshToken);
-        refreshTokenEntity.setUsername(user.getUsername());
-        refreshTokenEntity.setExpiryTime(Date.from(Instant.now().plus(VALID_REFRESH_DURATION, ChronoUnit.SECONDS)));
-        refreshTokenRepository.save(refreshTokenEntity);
-
-        return AuthenticationResponse
-                .builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .authenticated(true)
-                .build();
-    }
+//    @Override
+//    public AuthenticationResponse OutboundAuthenticate(String code) {
+//        var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
+//                .code(code)
+//                .clientId(CLIENT_ID)
+//                .clientSecret(CLIENT_SECRET)
+//                .redirectUri(REDIRECT_URI)
+//                .grantType(GRANT_TYPE)
+//                .build());
+//
+//        log.info("TOKEN RESPONSE {}", response);
+//
+//        var userInfo = outboundUserClient.getUserInfor("json", response.getAccessToken());
+//
+//        log.info("USER INFO {}", userInfo);
+//
+//
+//        Set<com.thanhtan.identity.entity.Role> roles = new HashSet<>();
+//        com.thanhtan.identity.entity.Role userRole = roleRepository.findByName(com.thanhtan.identity.enums.Role.USER.name()).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+//        roles.add(userRole);
+//
+//        var user = userRepository.findByUsername(userInfo.getEmail())
+//                .orElseGet(() -> {
+//                    User newUser = User.builder()
+//                            .username(userInfo.getEmail())
+//                            .firstName(userInfo.getGivenName())
+//                            .lastName(userInfo.getFamilyName())
+//                            .password(UUID.randomUUID().toString())
+//                            .roles(roles)
+//                            .build();
+//                    return userRepository.save(newUser);
+//                });
+//        var accessToken = generateToken(user, false);
+//        var refreshToken = generateToken(user, true);
+//
+//
+//        RefreshToken refreshTokenEntity = new RefreshToken();
+//
+//        refreshTokenEntity.setToken(refreshToken);
+//        refreshTokenEntity.setUsername(user.getUsername());
+//        refreshTokenEntity.setExpiryTime(Date.from(Instant.now().plus(VALID_REFRESH_DURATION, ChronoUnit.SECONDS)));
+//        refreshTokenRepository.save(refreshTokenEntity);
+//
+//        return AuthenticationResponse
+//                .builder()
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .authenticated(true)
+//                .build();
+//    }
 
 
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {

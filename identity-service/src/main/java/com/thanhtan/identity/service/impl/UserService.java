@@ -1,9 +1,6 @@
 package com.thanhtan.identity.service.impl;
 
-import com.thanhtan.identity.dto.request.CreateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateUserRequest;
-import com.thanhtan.identity.dto.request.UserRequest;
+import com.thanhtan.identity.dto.request.UserCreationRequest;
 import com.thanhtan.identity.dto.response.UserResponse;
 import com.thanhtan.identity.entity.User;
 import com.thanhtan.identity.enums.Role;
@@ -20,11 +17,12 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static com.thanhtan.identity.service.impl.CloudinaryService.getPublicIdFromUrl;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +37,9 @@ public class UserService implements IUserService {
 
     PasswordEncoder BCryptPasswordEncoder;
 
-    CloudinaryService cloudinaryService;
 
     @Override
-    public UserResponse createUser(UserRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
         User user = userMapper.toUser(request);
@@ -72,97 +69,97 @@ public class UserService implements IUserService {
         return userResponse;
     }
 
-    @Override
-    public UserResponse updateSystemUser(UpdateSystemUserRequest request, MultipartFile file, Long userId) {
-        User user = userRepository.findById(userId);
-        if (user == null) throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        String oldImagePublicId = getPublicIdFromUrl(user.getAvatar() != null ? user.getAvatar() : "");
-        userMapper.updateUser(user, request);
-        if (file != null) {
-            Map data = cloudinaryService.upload(file);
-            if (data != null) {
-                String newImageUrl = (String) data.get("url");
-                if (!oldImagePublicId.isEmpty()) cloudinaryService.deleteImage(oldImagePublicId);
-                user.setAvatar(newImageUrl);
-            }
-        }
-        Set<com.thanhtan.identity.entity.Role> roles = new HashSet<>();
-        com.thanhtan.identity.entity.Role userRole = roleRepository.findByName(request.getRoles())
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
-        roles.add(userRole);
-        user.setRoles(roles);
-        User updatedUser = userRepository.save(user);
+//    @Override
+//    public UserResponse updateSystemUser(UpdateSystemUserRequest request, MultipartFile file, Long userId) {
+//        User user = userRepository.findById(userId);
+//        if (user == null) throw new AppException(ErrorCode.USER_NOT_EXISTED);
+//        String oldImagePublicId = getPublicIdFromUrl(user.getAvatar() != null ? user.getAvatar() : "");
+//        userMapper.updateUser(user, request);
+//        if (file != null) {
+//            Map data = cloudinaryService.upload(file);
+//            if (data != null) {
+//                String newImageUrl = (String) data.get("url");
+//                if (!oldImagePublicId.isEmpty()) cloudinaryService.deleteImage(oldImagePublicId);
+//                user.setAvatar(newImageUrl);
+//            }
+//        }
+//        Set<com.thanhtan.identity.entity.Role> roles = new HashSet<>();
+//        com.thanhtan.identity.entity.Role userRole = roleRepository.findByName(request.getRoles())
+//                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+//        roles.add(userRole);
+//        user.setRoles(roles);
+//        User updatedUser = userRepository.save(user);
+//
+//        return userMapper.toUserResponse(updatedUser);
+//    }
 
-        return userMapper.toUserResponse(updatedUser);
-    }
-
-    @Override
-    public UserResponse createSystemUser(CreateSystemUserRequest request, MultipartFile file) {
-        if (userRepository.existsByUsername(request.getUsername()))
-            throw new AppException(ErrorCode.USER_EXISTED);
-
-        User user = userMapper.toUser(request);
-
-        if (user.getStatus() == Status.INACTIVE)
-            throw new AppException(ErrorCode.USER_INACTIVE);
-
-        user.setPassword(BCryptPasswordEncoder.encode(request.getPassword()));
-
-        Set<com.thanhtan.identity.entity.Role> roles = new HashSet<>();
-        com.thanhtan.identity.entity.Role userRole = roleRepository.findByName(request.getRoles())
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
-        roles.add(userRole);
-        user.setRoles(roles);
-
-        if (file != null) {
-            Map data = cloudinaryService.upload(file);
-            if (data != null) {
-                String imageUrl = (String) data.get("url");
-                user.setAvatar(imageUrl);
-            }
-        }
-
-        return userMapper.toUserResponse(userRepository.save(user));
-    }
-
-    @Override
-    public UserResponse updateUserProfileById(UpdateUserRequest request, MultipartFile file, Long userId) {
-        User user = userRepository.findById(userId);
-        if (user == null) throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        String oldImagePublicId = getPublicIdFromUrl(user.getAvatar() != null ? user.getAvatar() : "");
-        userMapper.updateUser(user, request);
-        if (file != null) {
-            Map data = cloudinaryService.upload(file);
-            if (data != null) {
-                String newImageUrl = (String) data.get("url");
-                if (!oldImagePublicId.isEmpty()) cloudinaryService.deleteImage(oldImagePublicId);
-                user.setAvatar(newImageUrl);
-            }
-        }
-//       user.setStatus(request.getStatus());
-        User updatedUser = userRepository.save(user);
-
-        return userMapper.toUserResponse(updatedUser);
-    }
-
-    @Override
-    public UserResponse updateUserProfile(UpdateUserRequest request, MultipartFile file) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        String oldImagePublicId = getPublicIdFromUrl(user.getAvatar() != null ? user.getAvatar() : "");
-        userMapper.updateUser(user, request);
-        if (file != null) {
-            Map data = cloudinaryService.upload(file);
-            if (data != null) {
-                String newImageUrl = (String) data.get("url");
-                if (!oldImagePublicId.isEmpty()) cloudinaryService.deleteImage(oldImagePublicId);
-                user.setAvatar(newImageUrl);
-            }
-        }
-        User updatedUser = userRepository.save(user);
-
-        return userMapper.toUserResponse(updatedUser);
-    }
+//    @Override
+//    public UserResponse createSystemUser(CreateSystemUserRequest request, MultipartFile file) {
+//        if (userRepository.existsByUsername(request.getUsername()))
+//            throw new AppException(ErrorCode.USER_EXISTED);
+//
+//        User user = userMapper.toUser(request);
+//
+//        if (user.getStatus() == Status.INACTIVE)
+//            throw new AppException(ErrorCode.USER_INACTIVE);
+//
+//        user.setPassword(BCryptPasswordEncoder.encode(request.getPassword()));
+//
+//        Set<com.thanhtan.identity.entity.Role> roles = new HashSet<>();
+//        com.thanhtan.identity.entity.Role userRole = roleRepository.findByName(request.getRoles())
+//                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+//        roles.add(userRole);
+//        user.setRoles(roles);
+//
+//        if (file != null) {
+//            Map data = cloudinaryService.upload(file);
+//            if (data != null) {
+//                String imageUrl = (String) data.get("url");
+//                user.setAvatar(imageUrl);
+//            }
+//        }
+//
+//        return userMapper.toUserResponse(userRepository.save(user));
+//    }
+//
+//    @Override
+//    public UserResponse updateUserProfileById(UpdateUserRequest request, MultipartFile file, Long userId) {
+//        User user = userRepository.findById(userId);
+//        if (user == null) throw new AppException(ErrorCode.USER_NOT_EXISTED);
+//        String oldImagePublicId = getPublicIdFromUrl(user.getAvatar() != null ? user.getAvatar() : "");
+//        userMapper.updateUser(user, request);
+//        if (file != null) {
+//            Map data = cloudinaryService.upload(file);
+//            if (data != null) {
+//                String newImageUrl = (String) data.get("url");
+//                if (!oldImagePublicId.isEmpty()) cloudinaryService.deleteImage(oldImagePublicId);
+//                user.setAvatar(newImageUrl);
+//            }
+//        }
+////       user.setStatus(request.getStatus());
+//        User updatedUser = userRepository.save(user);
+//
+//        return userMapper.toUserResponse(updatedUser);
+//    }
+//
+//    @Override
+//    public UserResponse updateUserProfile(UpdateUserRequest request, MultipartFile file) {
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+//        String oldImagePublicId = getPublicIdFromUrl(user.getAvatar() != null ? user.getAvatar() : "");
+//        userMapper.updateUser(user, request);
+//        if (file != null) {
+//            Map data = cloudinaryService.upload(file);
+//            if (data != null) {
+//                String newImageUrl = (String) data.get("url");
+//                if (!oldImagePublicId.isEmpty()) cloudinaryService.deleteImage(oldImagePublicId);
+//                user.setAvatar(newImageUrl);
+//            }
+//        }
+//        User updatedUser = userRepository.save(user);
+//
+//        return userMapper.toUserResponse(updatedUser);
+//    }
 
     @Override
     public List<UserResponse> getUsers() {

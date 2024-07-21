@@ -1,10 +1,11 @@
-package  com.thanhtan.identity.util;
+package com.thanhtan.identity.util;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.thanhtan.identity.dto.request.CreateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateSystemUserRequest;
-import com.thanhtan.identity.dto.request.UpdateUserRequest;
+import com.thanhtan.identity.dto.request.SystemUserUpdationRequest;
+import com.thanhtan.identity.dto.request.UserUpdationRequest;
 import com.thanhtan.identity.exception.AppException;
 import com.thanhtan.identity.exception.ErrorCode;
 import jakarta.validation.ConstraintViolation;
@@ -19,12 +20,12 @@ import java.util.stream.Collectors;
 public class ValidationUtil {
 
 
-    public static UpdateUserRequest validateUserStr(String userStr) throws IOException {
+    public static UserUpdationRequest validateUserStr(String userStr) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        UpdateUserRequest updateUserRequest = objectMapper.readValue(userStr, UpdateUserRequest.class);
-        Set<ConstraintViolation<UpdateUserRequest>> violations = validator.validate(updateUserRequest);
+        UserUpdationRequest updateUserRequest = objectMapper.readValue(userStr, UserUpdationRequest.class);
+        Set<ConstraintViolation<UserUpdationRequest>> violations = validator.validate(updateUserRequest);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
@@ -55,13 +56,13 @@ public class ValidationUtil {
         return userRequest;
     }
 
-    public static UpdateSystemUserRequest validateUpdateSystemUserStr(String userStr) throws IOException {
+    public static SystemUserUpdationRequest validateUpdateSystemUserStr(String userStr) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        UpdateSystemUserRequest userRequest = objectMapper.readValue(userStr, UpdateSystemUserRequest.class);
-        Set<ConstraintViolation<UpdateSystemUserRequest>> violations = validator.validate(userRequest);
+        SystemUserUpdationRequest userRequest = objectMapper.readValue(userStr, SystemUserUpdationRequest.class);
+        Set<ConstraintViolation<SystemUserUpdationRequest>> violations = validator.validate(userRequest);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
